@@ -1,13 +1,48 @@
 :root {
   font-family: "Segoe UI", "Microsoft YaHei", system-ui, sans-serif;
   color: #403c36;
-  background: #f7f3eb;
+  background: #f7f1e7;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
 }
 
 * { box-sizing: border-box; }
-body { margin: 0; min-width: 320px; }
+body {
+  position: relative;
+  isolation: isolate;
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 13% 21%, #f2c9a9a6 0, transparent 26%),
+    radial-gradient(circle at 88% 15%, #eadba8b3 0, transparent 25%),
+    radial-gradient(circle at 82% 79%, #cddac7a6 0, transparent 28%),
+    linear-gradient(145deg, #f9f4eb 4%, #f5e9dc 53%, #f3f0e6 100%);
+}
+body::before {
+  position: fixed;
+  z-index: -1;
+  inset: 0;
+  background-image: radial-gradient(#9d89735c .75px, transparent .75px);
+  background-size: 24px 24px;
+  opacity: .25;
+  pointer-events: none;
+  content: "";
+}
+body::after {
+  position: fixed;
+  z-index: -1;
+  width: min(45vw, 520px);
+  aspect-ratio: 1;
+  right: -12vw;
+  top: 29vh;
+  border: 1px solid #bd99774d;
+  border-radius: 50%;
+  box-shadow: 0 0 0 70px #ffffff19, 0 0 0 71px #bd99772b,
+    0 0 0 150px #ffffff15, 0 0 0 151px #bd99771d;
+  pointer-events: none;
+  content: "";
+}
 button { font: inherit; }
 
 .app {
@@ -31,7 +66,16 @@ button { font: inherit; }
 .brand-mark { color: #e7a853; font-size: 26px; line-height: 1; }
 .topbar-note { letter-spacing: .04em; }
 
-.game-shell { width: min(100%, 560px); margin: 66px auto 38px; }
+.game-shell {
+  width: min(100%, 600px);
+  margin: 50px auto 38px;
+  padding: 27px 22px 22px;
+  border: 1px solid #ffffffbd;
+  border-radius: 24px;
+  background: #fffaf2a8;
+  box-shadow: 0 22px 65px #947d5b21, inset 0 1px #ffffffd6;
+  backdrop-filter: blur(12px);
+}
 .heading-row { display: flex; align-items: end; justify-content: space-between; gap: 20px; }
 .eyebrow { margin: 0 0 4px; color: #aa9b86; font-size: 11px; font-weight: 800; letter-spacing: .22em; }
 h1 { font-size: clamp(60px, 12vw, 88px); letter-spacing: -.075em; line-height: 1; margin: 0; font-weight: 850; }
@@ -140,7 +184,7 @@ footer { margin-top: auto; padding: 24px 0 28px; color: #b8ab99; text-align: cen
   .app { width: min(100% - 28px, 500px); }
   .topbar { height: 64px; }
   .topbar-note { display: none; }
-  .game-shell { margin-top: 35px; }
+  .game-shell { margin-top: 25px; padding: 18px 13px 16px; border-radius: 17px; }
   .heading-row { align-items: end; gap: 8px; }
   .eyebrow { font-size: 9px; }
   .intro { max-width: 155px; line-height: 1.5; font-size: 12px; }
