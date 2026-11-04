@@ -47,6 +47,21 @@ function loadGame() {
 
 let best = readNumber(BEST_KEY);
 let state = loadGame();
+let animationTimer = null;
+let animationFrame = null;
+let animationId = 0;
+let animating = false;
+let queuedDirection = null;
+
+function stopAnimation() {
+  animationId++;
+  clearTimeout(animationTimer);
+  cancelAnimationFrame(animationFrame);
+  animationTimer = null;
+  animationFrame = null;
+  animating = false;
+  queuedDirection = null;
+}
 
 function persist() {
   try {
@@ -63,6 +78,7 @@ function persist() {
 }
 
 function startGame() {
+  stopAnimation();
   state = {
     board: emptyBoard(),
     score: 0,
@@ -108,7 +124,7 @@ function renderOverlay() {
   actions.append(restartButton);
 }
 
-function render() {
+function render(mergedCells = []) {
   boardElement.replaceChildren();
   state.board.forEach((row, rowIndex) => row.forEach((value, colIndex) => {
     const cell = document.createElement("div");
@@ -119,6 +135,7 @@ function render() {
       cell.classList.add("filled", `tile-${Math.min(value, 2048)}`);
       if (value > 2048) cell.classList.add("tile-super");
       if (state.newTile?.row === rowIndex && state.newTile?.col === colIndex) cell.classList.add("tile-new");
+      if (mergedCells.some(({ row, col }) => row === rowIndex && col === colIndex)) cell.classList.add("tile-merged");
       cell.textContent = value;
     }
     boardElement.append(cell);
@@ -134,7 +151,57 @@ function render() {
   renderOverlay();
 }
 
+function animateMove(movements, mergedCells) {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    render(mergedCells);
+    return;
+  }
+
+  const cells = [...boardElement.children];
+  const boardRect = boardElement.getBoundingClientRect();
+  const rectangles = cells.map((cell) => cell.getBoundingClientRect());
+  const movingTiles = movements.map(({ from, to }) => {
+    const sourceIndex = from.row * SIZE + from.col;
+    const targetIndex = to.row * SIZE + to.col;
+    const tile = cells[sourceIndex].cloneNode(true);
+    const source = rectangles[sourceIndex];
+    const target = rectangles[targetIndex];
+    tile.classList.remove("tile-new", "tile-merged");
+    tile.classList.add("moving-tile");
+    tile.setAttribute("aria-hidden", "true");
+    tile.style.left = `${source.left - boardRect.left}px`;
+    tile.style.top = `${source.top - boardRect.top}px`;
+    tile.style.width = `${source.width}px`;
+    tile.style.height = `${source.height}px`;
+    boardElement.append(tile);
+    cells[sourceIndex].classList.add("tile-departing");
+    return { tile, dx: target.left - source.left, dy: target.top - source.top };
+  });
+
+  animating = true;
+  const id = ++animationId;
+  animationFrame = requestAnimationFrame(() => {
+    if (id !== animationId) return;
+    for (const { tile, dx, dy } of movingTiles) {
+      tile.style.transform = `translate(${dx}px, ${dy}px)`;
+    }
+  });
+  animationTimer = setTimeout(() => {
+    if (id !== animationId) return;
+    animating = false;
+    animationTimer = null;
+    render(mergedCells);
+    const nextDirection = queuedDirection;
+    queuedDirection = null;
+    if (nextDirection) handleMove(nextDirection);
+  }, 175);
+}
+
 function handleMove(direction) {
+  if (animating) {
+    queuedDirection = direction;
+    return;
+  }
   if (state.over || (state.won && !state.keepPlaying)) return;
   const result = move(state.board, direction);
   if (!result.changed) return;
@@ -152,11 +219,12 @@ function handleMove(direction) {
   state.newTile = addRandomTile(state.board);
   state.over = !hasMoves(state.board);
   persist();
-  render();
+  animateMove(result.movements, result.mergedCells);
 }
 
 function undo() {
   if (!state.previous) return;
+  stopAnimation();
   const previous = state.previous;
   state.board = previous.board;
   state.score = previous.score;

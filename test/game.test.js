@@ -48,3 +48,24 @@ test("首次合成 2048 时标记获胜", () => {
   assert.equal(result.reachedTarget, true);
   assert.equal(result.points, 2048);
 });
+
+test("合并动画包含两个方块的起点和同一个终点", () => {
+  const board = emptyBoard();
+  board[0] = [2, 0, 2, 0];
+  const result = move(board, "right");
+  assert.deepEqual(result.movements, [
+    { from: { row: 0, col: 2 }, to: { row: 0, col: 3 } },
+    { from: { row: 0, col: 0 }, to: { row: 0, col: 3 } },
+  ]);
+  assert.deepEqual(result.mergedCells, [{ row: 0, col: 3 }]);
+});
+
+test("纵向移动返回正确的动画位置", () => {
+  const board = emptyBoard();
+  board[0][1] = 4;
+  const result = move(board, "down");
+  assert.deepEqual(result.movements, [
+    { from: { row: 0, col: 1 }, to: { row: 3, col: 1 } },
+  ]);
+  assert.deepEqual(result.mergedCells, []);
+});
