@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f7f3eb" />
+    <meta name="description" content="一款简洁的 2048 小游戏。滑动方块，合成 2048。" />
+    <title>2048 · 数字方块</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">▦</span>
+          <span>数字方块</span>
+        </div>
+        <span class="topbar-note">一个简单上头的小游戏</span>
+      </header>
+
+      <section class="game-shell" aria-labelledby="game-title">
+        <div class="heading-row">
+          <div>
+            <p class="eyebrow">THE NUMBER GAME</p>
+            <h1 id="game-title">2048<span class="title-dot">.</span></h1>
+            <p class="intro">合并相同的数字，向 <strong>2048</strong> 前进。</p>
+          </div>
+          <div class="score-group" aria-label="分数">
+            <div class="score-card">
+              <span>当前得分</span>
+              <strong id="score">0</strong>
+            </div>
+            <div class="score-card best-card">
+              <span>最高得分</span>
+              <strong id="best-score">0</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="action-row">
+          <div class="status" id="status" role="status" aria-live="polite">准备好了吗？开始合成吧！</div>
+          <div class="buttons">
+            <button class="button button-subtle" id="undo-button" type="button" title="撤销上一步 (Z)">
+              <span aria-hidden="true">↶</span> 撤销
+            </button>
+            <button class="button button-primary" id="new-game-button" type="button">
+              <span aria-hidden="true">↻</span> 新游戏
+            </button>
+          </div>
+        </div>
+
+        <div class="board-wrap">
+          <div class="board" id="board" role="grid" aria-label="2048 游戏棋盘"></div>
+          <div class="overlay" id="overlay" hidden>
+            <div class="overlay-card">
+              <span class="overlay-icon" id="overlay-icon" aria-hidden="true">✦</span>
+              <h2 id="overlay-title"></h2>
+              <p id="overlay-message"></p>
+              <div class="overlay-actions" id="overlay-actions"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="guide">
+          <div class="guide-icon" aria-hidden="true">⌘</div>
+          <p><strong>怎么玩</strong><br />用方向键或 <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> 移动方块，手机上可以直接滑动。相同数字相撞时会合并。</p>
+        </div>
+      </section>
+
+      <footer>每一步都算数 · 祝你玩得开心</footer>
+    </main>
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>
